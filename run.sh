@@ -1,11 +1,24 @@
 #!/bin/bash
+
+# for os type
+osName=$(uname -s)
+
 set -xue
 
 # QEMU file path
 QEMU=qemu-system-riscv32
 
 # new: path to clang and compiler flags
-CC=/usr/local/opt/llvm/bin/clang
+if [ "$osName" == "Darwin" ] # macOS
+then
+    CC=/usr/local/opt/llvm/bin/clang
+elif [ "$osName" == "Linux" ] # Linux
+then
+    CC=clang
+else
+    echo "unkown OS"
+fi
+
 CFLAGS="-std=c11 -O2 -g3 -Wall -Wextra --target=riscv32 -ffreestanding -nostdlib"
 
 # new: build the kernel
