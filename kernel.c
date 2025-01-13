@@ -33,13 +33,13 @@ void putchar(char ch) {
     sbi_call(ch, 0, 0, 0, 0, 0, 0, 1 /* console putchar */);
 }
 
-void *memset(void *buf, char c, size_t n) {
-    uint8_t *p = (uint8_t *)buf;
-    while (n--) {
-        *p++ = c;
-    }
-    return buf;
-}
+// void *memset(void *buf, char c, size_t n) {
+//     uint8_t *p = (uint8_t *)buf;
+//     while (n--) {
+//         *p++ = c;
+//     }
+//     return buf;
+// } // move to common.c
 
 void kernel_main() {
     memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
