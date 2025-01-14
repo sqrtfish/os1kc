@@ -1,9 +1,8 @@
 #include "kernel.h"
-#include "common.h"
 
-typedef unsigned char uint8_t;
-typedef unsigned int uint32_t;
-typedef uint32_t size_t;
+// typedef unsigned char uint8_t;
+// typedef unsigned int uint32_t;
+// typedef uint32_t size_t;
 
 #define PANIC(fmt, ...) \
     do { \
@@ -46,29 +45,6 @@ void putchar(char ch) {
 //     }
 //     return buf;
 // } // move to common.c
-
-void kernel_main() {
-    memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
-
-    WRITE_CSR(stvec, (uint32_t)kernel_entry);
-    __asm__ __volatile__("unimp");
-
-
-    const char *s = "\n\nHello RISC-V World!\n";
-    for (int i = 0; s[i] != '\0'; i++) {
-        putchar(s[i]);
-    }
-
-    printf("\n\nHello %s\n", "World!");
-    printf("1 + 2 = %d, %x\n", 1 + 2, 0x1234abcd);
-
-    PANIC("booted!");
-    printf("unreachable here!\n");
-    
-    for(;;) {
-        __asm__ __volatile__("wfi");
-    }
-}
 
 __attribute__((section(".text.boot")))
 __attribute__((naked))
@@ -162,7 +138,31 @@ void kernel_entry(void) {
 void handle_trap(struct trap_frame *f) {
     uint32_t scause = READ_CSR(scause);
     uint32_t stval = READ_CSR(stval);
-    uint32_t user_pc = READ_CSR(user_pc);
+    uint32_t user_pc = READ_CSR(sepc);
 
     PANIC("unexpected trap scause=%x, stval=%x, spec=%x\n", scause, stval, user_pc);
+}
+
+
+void kernel_main() {
+    memset(__bss, 0, (size_t) __bss_end - (size_t) __bss);
+
+    WRITE_CSR(stvec, (uint32_t)kernel_entry);
+    __asm__ __volatile__("unimp");
+
+
+    const char *s = "\n\nHello RISC-V World!\n";
+    for (int i = 0; s[i] != '\0'; i++) {
+        putchar(s[i]);
+    }
+
+    printf("\n\nHello %s\n", "World!");
+    printf("1 + 2 = %d, %x\n", 1 + 2, 0x1234abcd);
+
+    PANIC("booted!");
+    printf("unreachable here!\n");
+    
+    for(;;) {
+        __asm__ __volatile__("wfi");
+    }
 }
