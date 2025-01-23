@@ -4,6 +4,7 @@
 // extern char _binary_shell_bin_size[];
 
 void main(void) {
+    *((volatile int *) 0x80200000) = 0x1234;
     for (;;);
     // uint8_t *shell_bin = (uint8_t *) _binary_shell_bin_start;
     // printf("shell_bin size = %d\n", (int) _binary_shell_bin_size);

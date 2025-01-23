@@ -72,3 +72,6 @@ struct process {
 #define PAGE_W (1 << 2) // writable
 #define PAGE_X (1 << 3) // executable
 #define PAGE_U (1 << 4) // user (accessible in user mode)
+
+#define USER_BASE 0x1000000
+#define SSTATUS_SPIE (1 << 5)
