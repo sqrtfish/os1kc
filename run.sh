@@ -12,18 +12,25 @@ QEMU=qemu-system-riscv32
 if [ "$osName" == "Darwin" ] # macOS
 then
     CC=/usr/local/opt/llvm/bin/clang
+    OBJCOPY=/usr/local/opt/llvm/bin/llvm-objcopy
 elif [ "$osName" == "Linux" ] # Linux
 then
     CC=clang
+    OBJCOPY=llvm-objcopy
 else
     echo "unkown OS"
 fi
 
 CFLAGS="-std=c11 -O2 -g3 -Wall -Wextra --target=riscv32 -ffreestanding -nostdlib"
 
+# build the shell application
+$CC $CFLAGS -Wl,-Tuser.ld -Wl,-Map=shell.map -o shell.elf shell.c user.c common.c
+$OBJCOPY --set-section-flags .bss=alloc,contents -O binary shell.elf shell.bin
+$OBJCOPY -Ibinary -Oelf32-littleriscv shell.bin shell.bin.o
+
 # new: build the kernel
 $CC $CFLAGS -Wl,-Tkernel.ld -Wl,-Map=kernel.map -o kernel.elf \
-    kernel.c common.c
+    kernel.c common.c shell.bin.o
 
 # Start QEMU
 $QEMU -machine virt -bios default -nographic -serial mon:stdio --no-reboot \
