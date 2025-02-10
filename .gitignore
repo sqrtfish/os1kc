@@ -1,4 +1,5 @@
 /disk/*
+/tmp/*
 !/disk/.gitkeep
 *.map
 *.tar
